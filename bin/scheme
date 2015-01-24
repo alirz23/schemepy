@@ -9,7 +9,7 @@ from lib.scheme import Scheme
 
 def to_str(exp):
     if  isinstance(exp, list):
-        return '(' + ' '.join(map(tostr, exp)) + ')' 
+        return '(' + ' '.join(map(to_str, exp)) + ')' 
     else:
         return str(exp)
 
