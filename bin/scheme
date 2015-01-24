@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+import os, sys
+lib = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(lib))
+from lib.scheme import Scheme
+
+
+
+def to_str(exp):
+    if  isinstance(exp, list):
+        return '(' + ' '.join(map(tostr, exp)) + ')' 
+    else:
+        return str(exp)
+
+while True:
+    scheme = Scheme()
+    input = raw_input('> ')
+
+    # break out of loop and exit if any of 
+    # following is given
+    if input == '(q)' or input == '(quit)':
+        break
+
+    val = scheme.eval(scheme.parse(input))
+    if val is not None: 
+        print(to_str(val))
+
