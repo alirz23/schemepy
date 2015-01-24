@@ -4,7 +4,61 @@ import math, operator as op
 Symbol = str
 List = list
 Number = (int, float)
-Context = dict
+
+class Context():
+
+    class __store(dict):
+        pass
+
+    __instance = None
+
+    def __init__(self):
+        if Context.__instance is None:
+            Context.__instance = Context.__store()
+
+
+        self.__dict__['_Context_instance'] = Context.__instance
+
+        self.update(vars(math))
+        self.update({
+            '+': op.add,
+            '-': op.sub,
+            '*': op.mul,
+            '/': op.div,
+            '>': op.gt,
+            '<': op.lt,
+            '>=': op.ge,
+            '<=': op.le,
+            '=': op.eq,
+            'abs':     abs,
+            'append':  op.add,  
+            'apply':   apply,
+            'begin':   lambda *x: x[-1],
+            'car':     lambda x: x[0],
+            'cdr':     lambda x: x[1:], 
+            'cons':    lambda x,y: [x] + y,
+            'eq?':     op.is_, 
+            'equal?':  op.eq, 
+            'length':  len, 
+            'list':    lambda *x: list(x), 
+            'list?':   lambda x: isinstance(x,list), 
+            'map':     map,
+            'max':     max,
+            'min':     min,
+            'not':     op.not_,
+            'null?':   lambda x: x == [], 
+            'number?': lambda x: isinstance(x, Number),
+            'procedure?': callable,
+            'round':   round,
+            'symbol?': lambda x: isinstance(x, Symbol),
+        })
+
+    def __getattr__(self, attr):
+        return getattr(self.__instance, attr)
+
+    def __setattr__(self, attr, value):
+        return setattr(self.__instance, attr, value)
+
 
 class Scheme():
 
@@ -41,46 +95,13 @@ class Scheme():
             except ValueError:
                 return Symbol(token)
 
-    def globals(self):
-        context = Context()
-        context.update(vars(math))
-        context.update({
-            '+': op.add,
-            '-': op.sub,
-            '*': op.mul,
-            '/': op.div,
-            '>': op.gt,
-            '<': op.lt,
-            '>=': op.ge,
-            '<=': op.le,
-            '=': op.eq,
-            'abs':     abs,
-            'append':  op.add,  
-            'apply':   apply,
-            'begin':   lambda *x: x[-1],
-            'car':     lambda x: x[0],
-            'cdr':     lambda x: x[1:], 
-            'cons':    lambda x,y: [x] + y,
-            'eq?':     op.is_, 
-            'equal?':  op.eq, 
-            'length':  len, 
-            'list':    lambda *x: list(x), 
-            'list?':   lambda x: isinstance(x,list), 
-            'map':     map,
-            'max':     max,
-            'min':     min,
-            'not':     op.not_,
-            'null?':   lambda x: x == [], 
-            'number?': lambda x: isinstance(x, Number),
-            'procedure?': callable,
-            'round':   round,
-            'symbol?': lambda x: isinstance(x, Symbol),
-        })
-        return context
+    def eval(self, node, context=False):
 
-    def eval(self, node, context=None):
-        if context == None:
-            context = self.globals()
+        if not context:
+            context = Context()
+
+        if isinstance(node, List) and len(node) == 1:
+            node = node[0]
 
         if isinstance(node, Symbol):
             return context[node]

@@ -13,8 +13,8 @@ def to_str(exp):
     else:
         return str(exp)
 
+scheme = Scheme()
 while True:
-    scheme = Scheme()
     input = raw_input('> ')
 
     # break out of loop and exit if any of 
